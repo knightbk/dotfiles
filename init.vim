@@ -1,45 +1,33 @@
 set rtp+=/usr/local/opt/fzf
 
 " NS ==============================
-packadd minpac
-call minpac#init()
-call minpac#add('k-takata/minpac', {'type': 'opt'})   " package management
-call minpac#add('tpope/vim-commentary')               " commenting
-call minpac#add('ervandew/supertab')                  " tab completion
-call minpac#add('tmux-plugins/vim-tmux')              " vim tmux
-call minpac#add('christoomey/vim-tmux-navigator')     " tmux integration
-call minpac#add('junegunn/fzf')                       " fuzzy finder for file and text searching
-call minpac#add('junegunn/fzf.vim')                   " enhanced fzf integration
-call minpac#add('ctrlpvim/ctrlp.vim')
-call minpac#add('tpope/vim-repeat')                   " lets some commands repeat
-call minpac#add('morhetz/gruvbox')                    " color scheme
-call minpac#add('dracula/vim')
-call minpac#add('sheerun/vim-polyglot')
-call minpac#add('w0rp/ale')
-call minpac#add('scrooloose/nerdtree')
-call minpac#add('Xuyuanp/nerdtree-git-plugin')
-call minpac#add('vim-airline/vim-airline') 
-call minpac#add('vim-airline/vim-airline-themes')
-call minpac#add('tpope/vim-surround')
-call minpac#add('terryma/vim-multiple-cursors')
-" ============================== MINPAC
-function! MinpacReset()
-  call minpac#update()
-  call minpac#clean()
-endfunction
-command! Minpac call MinpacReset()
+call plug#begin(expand('~/.config/nvim/plugged'))
+Plug 'tpope/vim-commentary'               " commenting
+Plug 'ervandew/supertab'                  " tab completion
+Plug 'tmux-plugins/vim-tmux'              " vim tmux
+Plug 'christoomey/vim-tmux-navigator'     " tmux integration
+Plug 'junegunn/fzf'                       " fuzzy finder for file and text searching
+Plug 'junegunn/fzf.vim'                   " enhanced fzf integration
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-repeat'                   " lets some commands repeat
+Plug 'morhetz/gruvbox'
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'sheerun/vim-polyglot'
+Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+Plug 'w0rp/ale'
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'vim-airline/vim-airline' 
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-surround'
+Plug 'terryma/vim-multiple-cursors'
+call plug#end()
 
-" ==== ale
-let g:ale_linters = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
-let g:ale_fixers = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
-let g:ale_lint_on_enter = 0
-let g:ale_fix_on_save = 1
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⭕'
+" colorscheme
+" let g:gruvbox_contrast_dark="hard"
+set termguicolors
+colorscheme dracula 
 
-let g:ale_completion_delay = 100
-let g:ale_completion_enabled = 1
-let g:ale_completion_max_suggestions = 50
 " ============================== STATUS LINE ==============================
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -47,13 +35,12 @@ let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
 
 " ============================== SETTINGS ==============================
-" ale
-set completeopt=menu,menuone,preview,noselect,noinsert
-
-
-" colorscheme
-let g:gruvbox_contrast_dark="hard"
-colorscheme gruvbox
+let g:ale_linters = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
+let g:ale_fixers = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
+let g:ale_lint_on_enter = 0
+let g:ale_fix_on_save = 1
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⭕'
 
 " vim-go
 " remove once 0.3.1 is available and installed. currently stuck on 0.3.0
