@@ -1,20 +1,24 @@
 set rtp+=/usr/local/opt/fzf
 
+set modelines=0
+set nomodeline
+
 " NS ==============================
 call plug#begin(expand('~/.config/nvim/plugged'))
 Plug 'tpope/vim-commentary'               " commenting
 Plug 'ervandew/supertab'                  " tab completion
 Plug 'tmux-plugins/vim-tmux'              " vim tmux
-Plug 'christoomey/vim-tmux-navigator'     " tmux integration
-Plug 'junegunn/fzf'                       " fuzzy finder for file and text searching
-Plug 'junegunn/fzf.vim'                   " enhanced fzf integration
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-repeat'                   " lets some commands repeat
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
 Plug 'morhetz/gruvbox'
+Plug 'mhinz/vim-signify'           " git diff gutter
+Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'sheerun/vim-polyglot'
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'w0rp/ale'
+Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-airline/vim-airline' 
@@ -27,6 +31,10 @@ call plug#end()
 " let g:gruvbox_contrast_dark="hard"
 set termguicolors
 colorscheme dracula 
+
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
+
+let NERDTreeRespectWildIgnore=1
 
 " ============================== STATUS LINE ==============================
 let g:airline_powerline_fonts = 1
@@ -109,7 +117,30 @@ nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>+ <Plug>AirlineSelectNextTab
 
-tnoremap <Esc> <C-\><C-n>
+if has("nvim")
+  au TermOpen * tnoremap <Esc> <c-\><c-n>
+  au FileType fzf tunmap <Esc>
+endif
+
+map <C-h> :call WinMove('h')<cr>
+map <C-j> :call WinMove('j')<cr>
+map <C-k> :call WinMove('k')<cr>
+map <C-l> :call WinMove('l')<cr>
+
+" Window movement shortcuts
+" move to the window in the direction shown, or create a new window
+function! WinMove(key)
+    let t:curwin = winnr()
+    exec "wincmd ".a:key
+    if (t:curwin == winnr())
+        if (match(a:key,'[jk]'))
+            wincmd v
+        else
+            wincmd s
+        endif
+        exec "wincmd ".a:key
+    endif
+endfunction
 
 " close buffer
 nnoremap ,d :bd<CR>
@@ -130,27 +161,27 @@ nnoremap ,sv :so ~/.config/nvim/init.vim<CR>
 
 " find and replace word
 nnoremap ,fr :%s/
+
+nnoremap <C-p> :Files<CR>
+
 " find file
 nnoremap ,ff :Files<CR>
-" find fuzzy
-nnoremap ,fg :Rg 
+
+" find fuzzy in buffer
+nnoremap ,fb :BLines<CR>
+
+" find fuzzy in loaded buffers
+nnoremap ,fl :Lines<CR>
+
 " find buffer
 nnoremap ,b :Buffers<CR>
 
 " git
 nnoremap ,gb :Gblame<CR>
-
-" goyo
-nnoremap ,gy :Goyo<CR>
+nnoremap ,gs :Gstatus<CR>
 
 " quit all
 nnoremap ,q :qa<CR>
-
-" show invisible chars
-nnoremap ,l :set list!<CR>
-
-" no highlights
-nnoremap ,hh :noh<CR>
 
 " select all
 " kill all windows but current
@@ -173,6 +204,34 @@ nnoremap q: <Nop>
 
 " redo
 nnoremap U <C-r>
+
+" easymotion
+" Gif config
+map <Leader>l <Plug>(easymotion-lineforward)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+map <Leader>h <Plug>(easymotion-linebackward)
+
+let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
+
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+" s{char}{char} to move to {char}{char}
+nmap s <Plug>(easymotion-overwin-f2)
+" Gif config
+nmap s <Plug>(easymotion-s2)
+nmap t <Plug>(easymotion-t2)
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
+
 
 " FZF
 let g:fzf_action = {
@@ -213,16 +272,12 @@ call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
 call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
 call NERDTreeHighlightFile('jsx', 'Magenta', 'none', '#ff00ff', '#151515')
 
-autocmd vimenter * NERDTree
-map <C-n> :NERDTreeToggle<CR>
-
 " ============================== COMMANDS ==============================
-
-" turn a snake into a camel
-command! SnakeToCamel normal mmviw:s/\%V_\(.\)/\U\1/g<CR>:nohlsearch<CR>`m
-nnoremap ,k :SnakeToCamel<CR>
-" turn a camel into a snake
-command! CamelToSnake normal mmviw:s/\%V\(\u\)/_\L\1/g<CR>:nohlsearch<CR>`m
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
 " go to file using index.js if path is dir
 function! GfIndex(filepath)
