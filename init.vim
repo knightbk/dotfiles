@@ -6,35 +6,47 @@ set nomodeline
 " NS ==============================
 call plug#begin(expand('~/.config/nvim/plugged'))
 Plug 'tpope/vim-commentary'               " commenting
-Plug 'ervandew/supertab'                  " tab completion
-Plug 'tmux-plugins/vim-tmux'              " vim tmux
 Plug 'tpope/vim-repeat'                   " lets some commands repeat
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'morhetz/gruvbox'
-Plug 'mhinz/vim-signify'           " git diff gutter
+Plug 'dense-analysis/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'sheerun/vim-polyglot'
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-Plug 'w0rp/ale'
+Plug 'pgdouyon/vim-yin-yang'
+Plug 'chriskempson/base16-vim'
+" Plug 'sheerun/vim-polyglot'
+
+Plug 'pangloss/vim-javascript'
+Plug 'maxmellon/vim-jsx-pretty'
+
+"
 Plug 'easymotion/vim-easymotion'
+Plug 'justinmk/vim-sneak'
+
 Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-airline/vim-airline' 
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-surround'
-Plug 'terryma/vim-multiple-cursors'
+Plug 'vimwiki/vimwiki'
 call plug#end()
 
 " colorscheme
 " let g:gruvbox_contrast_dark="hard"
 set termguicolors
-colorscheme dracula 
+" colorscheme dracula 
+colorscheme base16-atelier-estuary
+let g:airline_theme='base16_grayscale'
+
 
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
 
 let NERDTreeRespectWildIgnore=1
+
+augroup FiletypeGroup
+    autocmd!
+    au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+augroup END
 
 " ============================== STATUS LINE ==============================
 let g:airline_powerline_fonts = 1
@@ -42,18 +54,31 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
 
+let base16colorspace=256
 " ============================== SETTINGS ==============================
-let g:ale_linters = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
-let g:ale_fixers = {'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
+let g:ale_linter_aliases = {'jsx': ['css', 'javascript']}
+let g:ale_linters = {'javascript': ['prettier', 'eslint', 'stylelint'], 'ruby': ['rubocop'], 'css': ['stylelint'], 'scss': ['stylelint']}
+let g:ale_fixers = {'javascript': ['prettier', 'eslint'] , 'ruby': ['rubocop'], 'css': ['stylelint'], 'scss': ['stylelint']}
 let g:ale_lint_on_enter = 0
 let g:ale_fix_on_save = 1
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⭕'
+let g:ale_sign_error = 'X'
+let g:ale_sign_warning = 'O'
+let g:ale_command_wrapper = ''
+let g:ale_completion_enabled = 0
 
-" vim-go
-" remove once 0.3.1 is available and installed. currently stuck on 0.3.0
-let g:go_version_warning=0
-let g:go_fmt_command = "goimports"
+" vimwiki
+let g:vimwiki_global_ext = 0
+
+let wiki_1 = {}
+let wiki_1.path = '~/vimwiki/'
+let wiki_1.syntax = 'markdown'
+let wiki_1.ext = '.md'
+
+let g:vimwiki_list = [wiki_1]
+let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+
+syntax on
+filetype plugin on
 
 set autoindent
 set autoread
@@ -75,9 +100,10 @@ set linebreak
 set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:✗,space:·
 set mouse=a
 set nobackup
+set nocompatible
 set noswapfile
 set noshowmode
-set number
+set rnu
 set path+=src
 set shiftwidth=2
 set showtabline=0
@@ -142,13 +168,21 @@ function! WinMove(key)
     endif
 endfunction
 
+" view registers
+nnoremap ,r :reg<CR>
+
+" black hole delete
+nnoremap ,d "_d 
+
 " close buffer
-nnoremap ,d :bd<CR>
+nnoremap ,q :bd<CR>
+
 " close all buffers
-nnoremap ,D :%bd<CR>
+nnoremap ,Q :%bd<CR>
 
 " vert split
 nnoremap ,v :vs<CR>
+nnoremap ,h :split<CR>
 
 " session save/open/remove
 nnoremap ,ss :mksession! ~/.config/nvim/sessions/
@@ -180,9 +214,6 @@ nnoremap ,b :Buffers<CR>
 nnoremap ,gb :Gblame<CR>
 nnoremap ,gs :Gstatus<CR>
 
-" quit all
-nnoremap ,q :qa<CR>
-
 " select all
 " kill all windows but current
 nnoremap ,x :only<CR>
@@ -205,6 +236,9 @@ nnoremap q: <Nop>
 " redo
 nnoremap U <C-r>
 
+" sneaking
+let g:sneak#label = 1
+
 " easymotion
 " Gif config
 map <Leader>l <Plug>(easymotion-lineforward)
@@ -218,26 +252,13 @@ let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 map  <Leader>f <Plug>(easymotion-bd-f)
 nmap <Leader>f <Plug>(easymotion-overwin-f)
 
-" s{char}{char} to move to {char}{char}
-nmap s <Plug>(easymotion-overwin-f2)
 " Gif config
-nmap s <Plug>(easymotion-s2)
-nmap t <Plug>(easymotion-t2)
-
-" Move to line
 map <Leader>L <Plug>(easymotion-bd-jk)
 nmap <Leader>L <Plug>(easymotion-overwin-line)
 
 " Move to word
 map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
-
-
-" FZF
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
 
 " move by one visual line
 nnoremap j gj
@@ -247,11 +268,6 @@ nnoremap k gk
 nnoremap 0 ^
 nnoremap ^ 0
 
-" explore project dir
-nnoremap ,, :Explore .<CR>
-" explore dir of current buffer
-nnoremap - :Explore<CR>
-
 " go to file using index.js if path is dir
 nnoremap gf yi":call GfIndex('<C-r>"')<CR>
 
@@ -260,23 +276,22 @@ nnoremap <D-p> :Ag
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 nmap ,n :NERDTreeFind<CR>
 nmap ,m :NERDTreeToggle<CR>
-" NerdTree File highlighting
-function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
- exec 'autocmd filetype nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
- exec 'autocmd filetype nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+
+" coc
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
-call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
-call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
-call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
-call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
-call NERDTreeHighlightFile('jsx', 'Magenta', 'none', '#ff00ff', '#151515')
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+     \ coc#refresh()
 
 " ============================== COMMANDS ==============================
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 " go to file using index.js if path is dir
