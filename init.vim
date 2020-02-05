@@ -13,7 +13,6 @@ Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'pgdouyon/vim-yin-yang'
 Plug 'chriskempson/base16-vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'JamshedVesuna/vim-markdown-preview'
@@ -28,12 +27,8 @@ Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 call plug#end()
 
-" colorscheme
-" let g:gruvbox_contrast_dark="hard"
 set termguicolors
 colorscheme dracula 
-" colorscheme base16-atelier-estuary
-" let g:airline_theme='base16_grayscale'
 let g:airline_theme='dracula'
 let g:dracula_italic = 0
 let g:airline_powerline_fonts = 0
@@ -196,10 +191,6 @@ nnoremap ,q :bd<CR>
 " close all buffers
 nnoremap ,Q :%bd<CR>
 
-" " vert split
-" nnoremap ,v :vs<CR>
-" nnoremap ,h :split<CR>
-
 " session save/open/remove
 nnoremap ,ss :mksession! ~/.config/nvim/sessions/
 nnoremap ,so :source ~/.config/nvim/sessions/
@@ -280,8 +271,6 @@ map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 " move by one visual line
-" nnoremap j gj
-" nnoremap k gk
 nnoremap <expr> j v:count ? 'j' : 'gj'
 nnoremap <expr> k v:count ? 'k' : 'gk'
 
