@@ -15,15 +15,12 @@ Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'pgdouyon/vim-yin-yang'
 Plug 'chriskempson/base16-vim'
-" Plug 'sheerun/vim-polyglot'
-
-Plug 'pangloss/vim-javascript'
-Plug 'maxmellon/vim-jsx-pretty'
-
-"
+Plug 'sheerun/vim-polyglot'
+Plug 'JamshedVesuna/vim-markdown-preview'
+Plug 'kana/vim-textobj-user'
+Plug 'rhysd/vim-textobj-ruby'
 Plug 'easymotion/vim-easymotion'
 Plug 'justinmk/vim-sneak'
-
 Plug 'scrooloose/nerdtree'
 Plug 'vim-airline/vim-airline' 
 Plug 'vim-airline/vim-airline-themes'
@@ -34,35 +31,48 @@ call plug#end()
 " colorscheme
 " let g:gruvbox_contrast_dark="hard"
 set termguicolors
-" colorscheme dracula 
-colorscheme base16-atelier-estuary
-let g:airline_theme='base16_grayscale'
-
+colorscheme dracula 
+" colorscheme base16-atelier-estuary
+" let g:airline_theme='base16_grayscale'
+let g:airline_theme='dracula'
+let g:dracula_italic = 0
+let g:airline_powerline_fonts = 0
 
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
+
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 let NERDTreeRespectWildIgnore=1
 
 augroup FiletypeGroup
     autocmd!
     au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+    au BufNewFile,BufRead *.js set filetype=javascript.jsx
 augroup END
 
 " ============================== STATUS LINE ==============================
+let g:airline_extensions = ['tabline']
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
 
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline_highlighting_cache = 1
+
 let base16colorspace=256
 " ============================== SETTINGS ==============================
+
 let g:ale_linter_aliases = {'jsx': ['css', 'javascript']}
-let g:ale_linters = {'javascript': ['prettier', 'eslint', 'stylelint'], 'ruby': ['rubocop'], 'css': ['stylelint'], 'scss': ['stylelint']}
-let g:ale_fixers = {'javascript': ['prettier', 'eslint'] , 'ruby': ['rubocop'], 'css': ['stylelint'], 'scss': ['stylelint']}
+let g:ale_linters = {'javascript': ['stylelint'], 'css': ['stylelint'], 'scss': ['stylelint']}
+let g:ale_fixers = {'javascript': ['stylelint'], 'css': ['stylelint'], 'scss': ['stylelint']}
+
 let g:ale_lint_on_enter = 0
 let g:ale_fix_on_save = 1
-let g:ale_sign_error = 'X'
-let g:ale_sign_warning = 'O'
+let g:ale_sign_error = 'x'
+let g:ale_sign_warning = 'o'
 let g:ale_command_wrapper = ''
 let g:ale_completion_enabled = 0
 
@@ -93,6 +103,7 @@ set expandtab
 set hidden
 set hlsearch
 set ignorecase
+set smartcase
 set inccommand=split
 set incsearch
 set laststatus=2
@@ -103,6 +114,7 @@ set nobackup
 set nocompatible
 set noswapfile
 set noshowmode
+set nu
 set rnu
 set path+=src
 set shiftwidth=2
@@ -110,11 +122,11 @@ set showtabline=0
 set tabstop=2
 set softtabstop=2
 set spelllang=en_us
-set spellfile=~/Dropbox/vimspell/en.utf-8.add
 set splitright
 set timeoutlen=2000
 set ttimeoutlen=0
 set wildmenu
+set updatetime=300
 
 " reload changed file on focus, buffer enter
 " helps if file was changed externally.
@@ -168,11 +180,15 @@ function! WinMove(key)
     endif
 endfunction
 
+
+" view yanks
+noremap <silent> ,y  :<C-u>CocList -A --normal yank<cr>
+
 " view registers
 nnoremap ,r :reg<CR>
 
 " black hole delete
-nnoremap ,d "_d 
+vmap ,d "_d"0P 
 
 " close buffer
 nnoremap ,q :bd<CR>
@@ -180,9 +196,9 @@ nnoremap ,q :bd<CR>
 " close all buffers
 nnoremap ,Q :%bd<CR>
 
-" vert split
-nnoremap ,v :vs<CR>
-nnoremap ,h :split<CR>
+" " vert split
+" nnoremap ,v :vs<CR>
+" nnoremap ,h :split<CR>
 
 " session save/open/remove
 nnoremap ,ss :mksession! ~/.config/nvim/sessions/
@@ -197,6 +213,9 @@ nnoremap ,sv :so ~/.config/nvim/init.vim<CR>
 nnoremap ,fr :%s/
 
 nnoremap <C-p> :Files<CR>
+
+
+nnoremap <C-f> :Ag<CR> 
 
 " find file
 nnoremap ,ff :Files<CR>
@@ -261,8 +280,10 @@ map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 " move by one visual line
-nnoremap j gj
-nnoremap k gk
+" nnoremap j gj
+" nnoremap k gk
+nnoremap <expr> j v:count ? 'j' : 'gj'
+nnoremap <expr> k v:count ? 'k' : 'gk'
 
 " 0 is easier. ^ is more useful.
 nnoremap 0 ^
@@ -270,8 +291,6 @@ nnoremap ^ 0
 
 " go to file using index.js if path is dir
 nnoremap gf yi":call GfIndex('<C-r>"')<CR>
-
-nnoremap <D-p> :Ag 
 
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 nmap ,n :NERDTreeFind<CR>
@@ -293,6 +312,11 @@ inoremap <silent><expr> <Tab>
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gr <Plug>(coc-references)
+
+" Remap for format selected region
+xmap <silent> ,fo  <Plug>(coc-format-selected)
+nmap <silent> ,fo  <Plug>(coc-format-selected)
+nmap <leader>rn <Plug>(coc-rename)
 
 " go to file using index.js if path is dir
 function! GfIndex(filepath)
