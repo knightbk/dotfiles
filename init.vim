@@ -12,30 +12,39 @@ Plug 'junegunn/fzf.vim'
 Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'chriskempson/base16-vim'
 Plug 'sheerun/vim-polyglot'
-Plug 'JamshedVesuna/vim-markdown-preview'
 Plug 'kana/vim-textobj-user'
 Plug 'rhysd/vim-textobj-ruby'
-Plug 'easymotion/vim-easymotion'
 Plug 'justinmk/vim-sneak'
 Plug 'scrooloose/nerdtree'
 Plug 'vim-airline/vim-airline' 
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-surround'
-Plug 'vimwiki/vimwiki'
+
+" colors 
+Plug 'pgdouyon/vim-yin-yang'
+Plug 'owickstrom/vim-colors-paramount'
+Plug 'ewilazarus/preto'
+Plug 'fxn/vim-monochrome'
+Plug 'jaredgorski/fogbell.vim'
+Plug 'sjl/badwolf'
+Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
+" colorscheme
 set termguicolors
-colorscheme dracula 
-let g:airline_theme='dracula'
-let g:dracula_italic = 0
+" colorscheme yin 
+" colorscheme fogbell
+colorscheme paramount
+
+let g:airline_theme='minimalist'
+" let g:dracula_italic = 1
 let g:airline_powerline_fonts = 0
-
+syntax enable
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
-
-let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+" let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+let g:fzf_layout = { 'window': { 'width': 1, 'height': 0.6 } }
+command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': ['--color', 'hl:9,hl+:14']}), <bang>0)
 
 let NERDTreeRespectWildIgnore=1
 
@@ -47,7 +56,7 @@ augroup END
 
 " ============================== STATUS LINE ==============================
 let g:airline_extensions = ['tabline']
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
@@ -71,18 +80,6 @@ let g:ale_sign_warning = 'o'
 let g:ale_command_wrapper = ''
 let g:ale_completion_enabled = 0
 
-" vimwiki
-let g:vimwiki_global_ext = 0
-
-let wiki_1 = {}
-let wiki_1.path = '~/vimwiki/'
-let wiki_1.syntax = 'markdown'
-let wiki_1.ext = '.md'
-
-let g:vimwiki_list = [wiki_1]
-let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
-
-syntax on
 filetype plugin on
 
 set autoindent
@@ -175,6 +172,8 @@ function! WinMove(key)
     endif
 endfunction
 
+" save
+noremap <C-s> :w<CR>
 
 " view yanks
 noremap <silent> ,y  :<C-u>CocList -A --normal yank<cr>
@@ -191,6 +190,10 @@ nnoremap ,q :bd<CR>
 " close all buffers
 nnoremap ,Q :%bd<CR>
 
+" " vert split
+" nnoremap ,v :vs<CR>
+" nnoremap ,h :split<CR>
+
 " session save/open/remove
 nnoremap ,ss :mksession! ~/.config/nvim/sessions/
 nnoremap ,so :source ~/.config/nvim/sessions/
@@ -203,7 +206,7 @@ nnoremap ,sv :so ~/.config/nvim/init.vim<CR>
 " find and replace word
 nnoremap ,fr :%s/
 
-nnoremap <C-p> :Files<CR>
+nnoremap <C-p> :GFiles<CR>
 
 
 nnoremap <C-f> :Ag<CR> 
@@ -251,26 +254,28 @@ let g:sneak#label = 1
 
 " easymotion
 " Gif config
-map <Leader>l <Plug>(easymotion-lineforward)
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-map <Leader>h <Plug>(easymotion-linebackward)
+" map <Leader>l <Plug>(easymotion-lineforward)
+" map <Leader>j <Plug>(easymotion-j)
+" map <Leader>k <Plug>(easymotion-k)
+" map <Leader>h <Plug>(easymotion-linebackward)
 
-let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
+" let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 
 " <Leader>f{char} to move to {char}
-map  <Leader>f <Plug>(easymotion-bd-f)
-nmap <Leader>f <Plug>(easymotion-overwin-f)
+" map  <Leader>f <Plug>(easymotion-bd-f)
+" nmap <Leader>f <Plug>(easymotion-overwin-f)
 
 " Gif config
-map <Leader>L <Plug>(easymotion-bd-jk)
-nmap <Leader>L <Plug>(easymotion-overwin-line)
+" map <Leader>L <Plug>(easymotion-bd-jk)
+" nmap <Leader>L <Plug>(easymotion-overwin-line)
 
 " Move to word
-map  <Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader>w <Plug>(easymotion-overwin-w)
+" map  <Leader>w <Plug>(easymotion-bd-w)
+" nmap <Leader>w <Plug>(easymotion-overwin-w)
 
 " move by one visual line
+" nnoremap j gj
+" nnoremap k gk
 nnoremap <expr> j v:count ? 'j' : 'gj'
 nnoremap <expr> k v:count ? 'k' : 'gk'
 
@@ -322,4 +327,38 @@ function! GfIndex(filepath)
     execute "edit" a:filepath
   endif
 endfunction
+
+function! s:update_fzf_colors()
+  let rules =
+  \ { 'fg':      [['Normal',       'fg']],
+    \ 'bg':      [['Normal',       'bg']],
+    \ 'hl':      [['Comment',      'fg']],
+    \ 'fg+':     [['CursorColumn', 'fg'], ['Normal', 'fg']],
+    \ 'bg+':     [['CursorColumn', 'bg']],
+    \ 'hl+':     [['Statement',    'fg']],
+    \ 'info':    [['PreProc',      'fg']],
+    \ 'prompt':  [['Conditional',  'fg']],
+    \ 'pointer': [['Exception',    'fg']],
+    \ 'marker':  [['Keyword',      'fg']],
+    \ 'spinner': [['Label',        'fg']],
+    \ 'header':  [['Comment',      'fg']] }
+  let cols = []
+  for [name, pairs] in items(rules)
+    for pair in pairs
+      let code = synIDattr(synIDtrans(hlID(pair[0])), pair[1])
+      if !empty(name) && code > 0
+        call add(cols, name.':'.code)
+        break
+      endif
+    endfor
+  endfor
+  let s:orig_fzf_default_opts = get(s:, 'orig_fzf_default_opts', $FZF_DEFAULT_OPTS)
+  let $FZF_DEFAULT_OPTS = s:orig_fzf_default_opts .
+        \ empty(cols) ? '' : (' --color='.join(cols, ','))
+endfunction
+
+augroup _fzf
+  autocmd!
+  autocmd ColorScheme * call <sid>update_fzf_colors()
+augroup END
 
