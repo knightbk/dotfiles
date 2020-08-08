@@ -9,36 +9,30 @@ Plug 'tpope/vim-commentary'               " commenting
 Plug 'tpope/vim-repeat'                   " lets some commands repeat
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
-Plug 'sheerun/vim-polyglot'
 Plug 'kana/vim-textobj-user'
 Plug 'rhysd/vim-textobj-ruby'
 Plug 'justinmk/vim-sneak'
-Plug 'scrooloose/nerdtree'
 Plug 'vim-airline/vim-airline' 
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-surround'
+Plug 'lambdalisue/fern.vim'
+
+" DB Stuff
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-ui'
 
 " colors 
-Plug 'pgdouyon/vim-yin-yang'
-Plug 'owickstrom/vim-colors-paramount'
-Plug 'ewilazarus/preto'
-Plug 'fxn/vim-monochrome'
-Plug 'jaredgorski/fogbell.vim'
-Plug 'sjl/badwolf'
+Plug 'knightbk/vim-colors-paramount'
 Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 " colorscheme
 set termguicolors
-" colorscheme yin 
-" colorscheme fogbell
 colorscheme paramount
 
 let g:airline_theme='minimalist'
-" let g:dracula_italic = 1
 let g:airline_powerline_fonts = 0
 syntax enable
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
@@ -68,17 +62,6 @@ let g:airline_highlighting_cache = 1
 
 let base16colorspace=256
 " ============================== SETTINGS ==============================
-
-let g:ale_linter_aliases = {'jsx': ['css', 'javascript']}
-let g:ale_linters = {'javascript': ['stylelint'], 'css': ['stylelint'], 'scss': ['stylelint']}
-let g:ale_fixers = {'javascript': ['stylelint'], 'css': ['stylelint'], 'scss': ['stylelint']}
-
-let g:ale_lint_on_enter = 0
-let g:ale_fix_on_save = 1
-let g:ale_sign_error = 'x'
-let g:ale_sign_warning = 'o'
-let g:ale_command_wrapper = ''
-let g:ale_completion_enabled = 0
 
 filetype plugin on
 
@@ -204,7 +187,7 @@ nnoremap ,ev :e ~/.config/nvim/init.vim<CR>
 nnoremap ,sv :so ~/.config/nvim/init.vim<CR>
 
 " find and replace word
-nnoremap ,fr :%s/
+nnoremap ,fr :%s/<C-r><C-w>/
 
 nnoremap <C-p> :GFiles<CR>
 
@@ -286,9 +269,8 @@ nnoremap ^ 0
 " go to file using index.js if path is dir
 nnoremap gf yi":call GfIndex('<C-r>"')<CR>
 
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-nmap ,n :NERDTreeFind<CR>
-nmap ,m :NERDTreeToggle<CR>
+nmap ,n :Fern . -reveal=% -drawer -width=30<CR>
+nmap ,m :Fern . -drawer -width=30<CR>
 
 " coc
 " use <tab> for trigger completion and navigate to the next complete item
@@ -361,4 +343,3 @@ augroup _fzf
   autocmd!
   autocmd ColorScheme * call <sid>update_fzf_colors()
 augroup END
-
