@@ -10,42 +10,63 @@ Plug 'tpope/vim-repeat'                   " lets some commands repeat
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
+" Plug 'tpope/vim-fugitive'                 " vim fugitive for git diffs
+
+" WIKI plugs
+Plug 'godlygeek/tabular'
+Plug 'lervag/wiki.vim'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'samgriesemer/vim-roam'
+Plug 'samgriesemer/vim-roam-md'
+
+"CoQ (not coc)
+" Plug 'neovim/nvim-lspconfig'
+" Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+
+" expanded text objects
 Plug 'kana/vim-textobj-user'
-Plug 'rhysd/vim-textobj-ruby'
+Plug 'wellle/targets.vim'
+Plug 'tpope/vim-surround'
+
 Plug 'justinmk/vim-sneak'
+
+Plug 'kshenoy/vim-signature'
+
+" Filetree
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+
+" syntax things
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'sheerun/vim-polyglot'
+Plug 'maxmellon/vim-jsx-pretty'
+
+"airline
 Plug 'vim-airline/vim-airline' 
 Plug 'vim-airline/vim-airline-themes'
-Plug 'tpope/vim-surround'
-Plug 'lambdalisue/fern.vim'
-
-" DB Stuff
-Plug 'tpope/vim-dadbod'
-Plug 'kristijanhusak/vim-dadbod-ui'
 
 " colors 
-Plug 'knightbk/vim-colors-paramount'
+" Plug 'knightbk/vim-colors-paramount'
 Plug 'dracula/vim', { 'as': 'dracula' }
+" Plug 'jaredgorski/fogbell.vim'
+
 call plug#end()
 
-" colorscheme
+colorscheme dracula
 set termguicolors
-colorscheme paramount
-
-let g:airline_theme='minimalist'
+let g:airline_theme='dracula'
 let g:airline_powerline_fonts = 0
+
 syntax enable
+
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
-" let $FZF_DEFAULT_COMMAND = 'ag -g ""'
+let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 let g:fzf_layout = { 'window': { 'width': 1, 'height': 0.6 } }
 command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': ['--color', 'hl:9,hl+:14']}), <bang>0)
 
-let NERDTreeRespectWildIgnore=1
-
 augroup FiletypeGroup
     autocmd!
-    au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
-    au BufNewFile,BufRead *.js set filetype=javascript.jsx
+    au BufNewFile,BufRead *.ts set filetype=typescript
+    au BufNewFile,BufRead *.tsx set filetype=typescriptreact
 augroup END
 
 " ============================== STATUS LINE ==============================
@@ -60,7 +81,6 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline_highlighting_cache = 1
 
-let base16colorspace=256
 " ============================== SETTINGS ==============================
 
 filetype plugin on
@@ -68,17 +88,15 @@ filetype plugin on
 set autoindent
 set autoread
 set autowrite
-set background=dark
 set backspace=indent,eol,start
-set backupdir=~/nvimbackup
 set backupcopy=yes
 set clipboard^=unnamedplus
 set colorcolumn=120
+set conceallevel=2
 set expandtab
 set hidden
 set hlsearch
 set ignorecase
-set smartcase
 set inccommand=split
 set incsearch
 set laststatus=2
@@ -87,21 +105,22 @@ set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:✗,space:·
 set mouse=a
 set nobackup
 set nocompatible
-set noswapfile
 set noshowmode
+set noswapfile
 set nu
-set rnu
 set path+=src
+set rnu
 set shiftwidth=2
 set showtabline=0
-set tabstop=2
+set smartcase
 set softtabstop=2
 set spelllang=en_us
 set splitright
+set tabstop=2
 set timeoutlen=2000
 set ttimeoutlen=0
-set wildmenu
 set updatetime=300
+set wildmenu
 
 " reload changed file on focus, buffer enter
 " helps if file was changed externally.
@@ -111,8 +130,8 @@ augroup ReloadGroup
 augroup END
 
 " =========== cursorline
-hi CursorLine ctermfg=NONE ctermbg=NONE
-hi CursorLineNR ctermfg=black ctermbg=yellow
+hi CursorLine guifg=NONE ctermbg=NONE
+hi CursorLineNR guifg=LightCyan guibg=NONE
 set cursorline
 
 " ============================== MAPPINGS ==============================
@@ -127,18 +146,16 @@ nmap <leader>6 <Plug>AirlineSelectTab6
 nmap <leader>7 <Plug>AirlineSelectTab7
 nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
-nmap <leader>- <Plug>AirlineSelectPrevTab
-nmap <leader>+ <Plug>AirlineSelectNextTab
 
 if has("nvim")
   au TermOpen * tnoremap <Esc> <c-\><c-n>
   au FileType fzf tunmap <Esc>
 endif
 
-map <C-h> :call WinMove('h')<cr>
-map <C-j> :call WinMove('j')<cr>
-map <C-k> :call WinMove('k')<cr>
-map <C-l> :call WinMove('l')<cr>
+noremap <C-h> :call WinMove('h')<cr>
+noremap <C-j> :call WinMove('j')<cr>
+noremap <C-k> :call WinMove('k')<cr>
+noremap  <C-l> :call WinMove('l')<cr>
 
 " Window movement shortcuts
 " move to the window in the direction shown, or create a new window
@@ -189,7 +206,7 @@ nnoremap ,sv :so ~/.config/nvim/init.vim<CR>
 " find and replace word
 nnoremap ,fr :%s/<C-r><C-w>/
 
-nnoremap <C-p> :GFiles<CR>
+nnoremap <C-p> :Files<CR>
 
 
 nnoremap <C-f> :Ag<CR> 
@@ -206,6 +223,9 @@ nnoremap ,fl :Lines<CR>
 " find buffer
 nnoremap ,b :Buffers<CR>
 
+" find mark
+nnoremap ,m :Marks<CR>
+
 " git
 nnoremap ,gb :Gblame<CR>
 nnoremap ,gs :Gstatus<CR>
@@ -217,14 +237,6 @@ nnoremap ,x :only<CR>
 " close quickfix
 nnoremap ,cc :cclose<CR>
 
-" non-leader mappings ==========
-
-" run make
-nnoremap <silent> <F5> :wa<CR>:silent make<CR>
-inoremap <silent> <F5> <Esc>:wa<CR>:silent make<CR>
-nnoremap <silent> <F6> :wa<CR>:silent make clean<CR>
-nnoremap <silent> <F7> :wa<CR>:silent make launch<CR>
-
 " these only get hit by accident
 nnoremap Q <Nop>
 nnoremap q: <Nop>
@@ -234,27 +246,10 @@ nnoremap U <C-r>
 
 " sneaking
 let g:sneak#label = 1
-
-" easymotion
-" Gif config
-" map <Leader>l <Plug>(easymotion-lineforward)
-" map <Leader>j <Plug>(easymotion-j)
-" map <Leader>k <Plug>(easymotion-k)
-" map <Leader>h <Plug>(easymotion-linebackward)
-
-" let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
-
-" <Leader>f{char} to move to {char}
-" map  <Leader>f <Plug>(easymotion-bd-f)
-" nmap <Leader>f <Plug>(easymotion-overwin-f)
-
-" Gif config
-" map <Leader>L <Plug>(easymotion-bd-jk)
-" nmap <Leader>L <Plug>(easymotion-overwin-line)
-
-" Move to word
-" map  <Leader>w <Plug>(easymotion-bd-w)
-" nmap <Leader>w <Plug>(easymotion-overwin-w)
+map f <Plug>Sneak_f
+map F <Plug>Sneak_F
+map t <Plug>Sneak_t
+map T <Plug>Sneak_T
 
 " move by one visual line
 " nnoremap j gj
@@ -266,13 +261,11 @@ nnoremap <expr> k v:count ? 'k' : 'gk'
 nnoremap 0 ^
 nnoremap ^ 0
 
-" go to file using index.js if path is dir
-nnoremap gf yi":call GfIndex('<C-r>"')<CR>
+"chadtree 
+nmap ,n <cmd>CHADopen<cr>
+let g:chadtree_settings = { "theme": {"icon_glyph_set": "devicons"} }
 
-nmap ,n :Fern . -reveal=% -drawer -width=30<CR>
-nmap ,m :Fern . -drawer -width=30<CR>
-
-" coc
+"coc
 " use <tab> for trigger completion and navigate to the next complete item
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -283,6 +276,7 @@ inoremap <silent><expr> <Tab>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<Tab>" :
      \ coc#refresh()
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " ============================== COMMANDS ==============================
 " Remap keys for gotos
@@ -290,56 +284,19 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gr <Plug>(coc-references)
 
 " Remap for format selected region
-xmap <silent> ,fo  <Plug>(coc-format-selected)
-nmap <silent> ,fo  <Plug>(coc-format-selected)
 nmap <leader>rn <Plug>(coc-rename)
+nmap ,fe :CocCommand eslint.executeAutofix<cr>
 
-" go to file using index.js if path is dir
-function! GfIndex(filepath)
-  let indexPath = a:filepath . "/index.js"
-  if isdirectory(a:filepath) && filereadable(indexPath)
-    execute "edit" path
-  elseif isdirectory("src/" . a:filepath) && filereadable("src/" . indexPath)
-    execute "edit" "src/" . indexPath
-  elseif filereadable(a:filepath . ".js")
-    execute "edit" a:filepath . ".js"
-  elseif filereadable("src/" . a:filepath . ".js")
-    execute "edit" "src/" . a:filepath . ".js"
-  else
-    execute "edit" a:filepath
-  endif
-endfunction
+" COQ (not coc)
+" let g:coq_settings = { 'auto_start': v:true }
 
-function! s:update_fzf_colors()
-  let rules =
-  \ { 'fg':      [['Normal',       'fg']],
-    \ 'bg':      [['Normal',       'bg']],
-    \ 'hl':      [['Comment',      'fg']],
-    \ 'fg+':     [['CursorColumn', 'fg'], ['Normal', 'fg']],
-    \ 'bg+':     [['CursorColumn', 'bg']],
-    \ 'hl+':     [['Statement',    'fg']],
-    \ 'info':    [['PreProc',      'fg']],
-    \ 'prompt':  [['Conditional',  'fg']],
-    \ 'pointer': [['Exception',    'fg']],
-    \ 'marker':  [['Keyword',      'fg']],
-    \ 'spinner': [['Label',        'fg']],
-    \ 'header':  [['Comment',      'fg']] }
-  let cols = []
-  for [name, pairs] in items(rules)
-    for pair in pairs
-      let code = synIDattr(synIDtrans(hlID(pair[0])), pair[1])
-      if !empty(name) && code > 0
-        call add(cols, name.':'.code)
-        break
-      endif
-    endfor
-  endfor
-  let s:orig_fzf_default_opts = get(s:, 'orig_fzf_default_opts', $FZF_DEFAULT_OPTS)
-  let $FZF_DEFAULT_OPTS = s:orig_fzf_default_opts .
-        \ empty(cols) ? '' : (' --color='.join(cols, ','))
-endfunction
-
-augroup _fzf
-  autocmd!
-  autocmd ColorScheme * call <sid>update_fzf_colors()
-augroup END
+" Wikithings
+let g:wiki_root = '~/Notes'
+nmap ,fw :WikiFzfPages<CR>
+let g:wiki_filetypes = ['md']
+let g:wiki_link_extension = '.md'
+let g:wiki_global_load = 0
+nnoremap <F5> "=strftime("%b %d %Y")<CR>P
+inoremap <F5> <C-R>=strftime("%b %d %Y")<CR>
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal = 2

@@ -1,0 +1,6 @@
+{
+  "eslint.autoFixOnSave": false,
+  "coc.preferences.formatOnSaveFiletypes": ["js", "jsx"],
+  "yank.highlight.enable": true,
+  "yank.highlight.duration": 5000,
+}
